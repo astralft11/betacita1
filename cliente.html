@@ -1,0 +1,829 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Citas Multiservicio</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/client.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3a0ca3;
+    --accent-color: #4cc9f0;
+    --success-color: #2ecc71;
+    --error-color: #e74c3c;
+    --warning-color: #f39c12;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --gray-color: #6c757d;
+    --light-gray: #e9ecef;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+    --card-hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: var(--dark-color);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+header h1 {
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 2.2rem;
+    position: relative;
+    z-index: 1;
+}
+
+header p {
+    opacity: 0.9;
+    font-weight: 300;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    gap: 0.5rem;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn i {
+    font-size: 1.1em;
+}
+
+.btn.approve {
+    background-color: var(--success-color);
+}
+
+.btn.reject {
+    background-color: var(--error-color);
+}
+
+.btn.outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn.outline:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--dark-color);
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border: 2px solid var(--light-gray);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.notification {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    box-shadow: var(--card-hover-shadow);
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 350px;
+}
+
+.notification i {
+    font-size: 1.4rem;
+}
+
+.notification.success {
+    background-color: var(--success-color);
+}
+
+.notification.error {
+    background-color: var(--error-color);
+}
+
+.notification.warning {
+    background-color: var(--warning-color);
+}
+
+.notification.hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.9);
+}
+
+.appointments-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.75rem;
+    margin-top: 2rem;
+}
+
+.appointment-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.appointment-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.appointment-card h3 {
+    margin-bottom: 0.75rem;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+.appointment-card p {
+    margin-bottom: 0.5rem;
+    color: var(--gray-color);
+    font-size: 0.95rem;
+}
+
+.appointment-card .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+.status i {
+    font-size: 0.9em;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.filters select, .filters input {
+    flex: 1;
+    min-width: 200px;
+    max-width: 100%;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    grid-column: 1 / -1;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: var(--gray-color);
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+}
+
+.empty-state h3 {
+    margin-bottom: 0.75rem;
+    color: var(--dark-color);
+}
+
+.empty-state p {
+    color: var(--gray-color);
+    max-width: 400px;
+    margin: 0 auto 1.5rem;
+}
+
+.detail-item {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.detail-item h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.detail-item p {
+    color: var(--dark-color);
+    margin-bottom: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.actions .btn {
+    flex: 1;
+    min-width: 160px;
+}
+
+/* Efectos de carga */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.appointment-card {
+    animation: fadeIn 0.4s ease forwards;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .container {
+        padding: 0 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 1.75rem 1.25rem;
+    }
+    
+    .appointments-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .filters select, .filters input {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+    
+    .actions .btn {
+        width: 100%;
+    }
+    
+    .notification {
+        max-width: calc(100% - 50px);
+        right: 25px;
+        left: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.6rem;
+    }
+    
+    header p {
+        font-size: 0.95rem;
+    }
+    
+    .container {
+        padding: 0 1rem;
+    }
+    
+    .appointment-card {
+        padding: 1.5rem;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+}
+
+#appointment-form {
+    background-color: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 3rem;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#appointment-form h2 {
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+    font-size: 1.6rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+#appointment-form h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+#my-appointments h2 {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+    font-size: 1.6rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+#my-appointments h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    border-radius: 2px;
+}
+
+.empty-state .btn {
+    margin-top: 1rem;
+}
+
+.download-pdf {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+/* Animación para nuevos elementos */
+@keyframes highlight {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+    50% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(67, 97, 238, 0.1); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
+}
+
+.appointment-card.highlight {
+    animation: highlight 1.5s ease;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Agenda tu cita</h1>
+        <p>Barbería, Belleza, Uñas, Médico y más</p>
+    </header>
+
+    <main class="container">
+        <section id="appointment-form">
+            <h2>Solicitar Nueva Cita</h2>
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label for="name">Nombre Completo:</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Correo Electrónico:</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Teléfono:</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="service">Tipo de Servicio:</label>
+                    <select id="service" required>
+                        <option value="">Seleccione un servicio</option>
+                        <option value="barberia">Barbería</option>
+                        <option value="belleza">Salón de Belleza</option>
+                        <option value="unas">Uñas</option>
+                        <option value="medico">Consulta Médica</option>
+                        <option value="masaje">Masajes</option>
+                        <option value="otros">Otros Servicios</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">Fecha:</label>
+                    <input type="date" id="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="time">Hora:</label>
+                    <input type="time" id="time" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notas Adicionales:</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Solicitar Cita</button>
+            </form>
+        </section>
+
+        <section id="my-appointments">
+            <h2>Mis Citas</h2>
+            <div id="appointmentsList" class="appointments-container"></div>
+        </section>
+    </main>
+
+    <div id="notification" class="notification hidden"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/client.js"></script>
+    <script src="js/pdfGenerator.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Clase para manejar el almacenamiento local
+class AppointmentStorage {
+    static STORAGE_KEY = 'appointmentSystem';
+    
+    static getAllAppointments() {
+        const data = localStorage.getItem(this.STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+    }
+    
+    static saveAllAppointments(appointments) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(appointments));
+    }
+    
+    static getAppointmentById(id) {
+        const appointments = this.getAllAppointments();
+        return appointments.find(app => app.id === id);
+    }
+    
+    static saveAppointment(appointment) {
+        const appointments = this.getAllAppointments();
+        const existingIndex = appointments.findIndex(app => app.id === appointment.id);
+        
+        if (existingIndex >= 0) {
+            appointments[existingIndex] = appointment;
+        } else {
+            appointments.push(appointment);
+        }
+        
+        this.saveAllAppointments(appointments);
+        return appointment;
+    }
+    
+    static generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+}
+
+// Funciones de utilidad
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    
+    // Mostrar notificación
+    setTimeout(() => {
+        notification.classList.remove('hidden');
+    }, 10);
+    
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        notification.classList.add('hidden');
+    }, 3000);
+}
+
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('es-ES', options);
+}
+
+function formatTime(timeString) {
+    return timeString.substring(0, 5); // Formato HH:MM
+}
+
+function getServiceName(serviceKey) {
+    const services = {
+        'barberia': 'Barbería',
+        'belleza': 'Salón de Belleza',
+        'unas': 'Uñas',
+        'medico': 'Consulta Médica',
+        'masaje': 'Masajes',
+        'otros': 'Otros Servicios'
+    };
+    return services[serviceKey] || serviceKey;
+}
+
+function getStatusText(status) {
+    const statuses = {
+        'pending': 'Pendiente',
+        'approved': 'Aprobada',
+        'rejected': 'Rechazada'
+    };
+    return statuses[status] || status;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const appointmentForm = document.getElementById('appointmentForm');
+    const appointmentsList = document.getElementById('appointmentsList');
+    
+    // Cargar citas del usuario al iniciar
+    loadUserAppointments();
+    
+    // Manejar envío del formulario
+    appointmentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const service = document.getElementById('service').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const notes = document.getElementById('notes').value;
+        
+        const newAppointment = {
+            id: AppointmentStorage.generateId(),
+            name,
+            email,
+            phone,
+            service,
+            date,
+            time,
+            notes,
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
+        
+        AppointmentStorage.saveAppointment(newAppointment);
+        showNotification('Cita solicitada correctamente');
+        appointmentForm.reset();
+        loadUserAppointments();
+        
+        // Simular notificación al admin (en un sistema real sería con websockets)
+        setTimeout(() => {
+            if (window.location.pathname.includes('admin.html')) {
+                showNotification('Nueva cita solicitada', 'warning');
+                loadAdminAppointments();
+            }
+        }, 1000);
+    });
+    
+    // Cargar citas del usuario
+    function loadUserAppointments() {
+        const allAppointments = AppointmentStorage.getAllAppointments();
+        const userEmail = 'user@example.com'; // En un sistema real sería el email del usuario logueado
+        
+        // Filtrar por email del usuario (en este ejemplo usamos cualquier cita)
+        const userAppointments = allAppointments; //.filter(app => app.email === userEmail);
+        
+        if (userAppointments.length === 0) {
+            appointmentsList.innerHTML = `
+                <div class="empty-state">
+                    <h3>No tienes citas programadas</h3>
+                    <p>Solicita tu primera cita completando el formulario</p>
+                </div>
+            `;
+            return;
+        }
+        
+        appointmentsList.innerHTML = userAppointments.map(appointment => `
+            <div class="appointment-card" data-id="${appointment.id}">
+                <h3>${getServiceName(appointment.service)}</h3>
+                <p><strong>Fecha:</strong> ${formatDate(appointment.date)}</p>
+                <p><strong>Hora:</strong> ${formatTime(appointment.time)}</p>
+                <p><strong>Estado:</strong> <span class="status status-${appointment.status}">${getStatusText(appointment.status)}</span></p>
+                ${appointment.status === 'approved' ? 
+                    `<button class="btn download-pdf" data-id="${appointment.id}">Descargar PDF</button>` : ''}
+            </div>
+        `).join('');
+        
+        // Manejar descarga de PDF
+        document.querySelectorAll('.download-pdf').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const appointmentId = this.getAttribute('data-id');
+                generateAppointmentPDF(appointmentId);
+            });
+        });
+    }
+    
+    // Escuchar cambios en el almacenamiento (para actualización en tiempo real)
+    window.addEventListener('storage', function(e) {
+        if (e.key === AppointmentStorage.STORAGE_KEY) {
+            loadUserAppointments();
+        }
+    });
+});
+
+function generateAppointmentPDF(appointmentId) {
+    const { jsPDF } = window.jspdf;
+    const appointment = AppointmentStorage.getAppointmentById(appointmentId);
+    
+    if (!appointment) {
+        showNotification('No se encontró la cita', 'error');
+        return;
+    }
+    
+    const doc = new jsPDF();
+    
+    // Logo (opcional)
+    // doc.addImage('logo.png', 'PNG', 10, 10, 50, 20);
+    
+    // Título
+    doc.setFontSize(20);
+    doc.setTextColor(40);
+    doc.text('Confirmación de Cita', 105, 20, { align: 'center' });
+    
+    // Línea decorativa
+    doc.setDrawColor(74, 111, 165);
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+    
+    // Información de la cita
+    doc.setFontSize(12);
+    doc.setTextColor(80);
+    
+    let yPosition = 40;
+    
+    // Sección 1: Información del cliente
+    doc.setFontSize(14);
+    doc.setTextColor(74, 111, 165);
+    doc.text('Información del Cliente', 20, yPosition);
+    doc.setFontSize(12);
+    doc.setTextColor(80);
+    
+    yPosition += 10;
+    doc.text(`Nombre: ${appointment.name}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Email: ${appointment.email}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Teléfono: ${appointment.phone}`, 20, yPosition);
+    
+    yPosition += 15;
+    
+    // Sección 2: Detalles de la cita
+    doc.setFontSize(14);
+    doc.setTextColor(74, 111, 165);
+    doc.text('Detalles de la Cita', 20, yPosition);
+    doc.setFontSize(12);
+    doc.setTextColor(80);
+    
+    yPosition += 10;
+    doc.text(`Servicio: ${getServiceName(appointment.service)}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Fecha: ${formatDate(appointment.date)}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Hora: ${formatTime(appointment.time)}`, 20, yPosition);
+    yPosition += 7;
+    doc.text(`Estado: ${getStatusText(appointment.status)}`, 20, yPosition);
+    
+    if (appointment.notes) {
+        yPosition += 7;
+        doc.text(`Notas: ${appointment.notes}`, 20, yPosition);
+    }
+    
+    yPosition += 15;
+    
+    // Sección 3: Información adicional
+    doc.setFontSize(14);
+    doc.setTextColor(74, 111, 165);
+    doc.text('Información Adicional', 20, yPosition);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    
+    yPosition += 10;
+    doc.text('Por favor llegue 10 minutos antes de su cita.', 20, yPosition);
+    yPosition += 5;
+    doc.text('Para cancelaciones o cambios, contáctenos con 24 horas de anticipación.', 20, yPosition);
+    
+    // Pie de página
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text('Gracias por confiar en nuestros servicios', 105, 280, { align: 'center' });
+    doc.text(`Documento generado el ${new Date().toLocaleDateString('es-ES')}`, 105, 285, { align: 'center' });
+    
+    // Guardar el PDF
+    doc.save(`Cita_${appointment.name.replace(' ', '_')}_${appointment.date}.pdf`);
+    showNotification('PDF generado correctamente');
+}
+    </script>
+</body>
+</html>
